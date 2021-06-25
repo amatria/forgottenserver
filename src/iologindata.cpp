@@ -171,6 +171,71 @@ uint32_t IOLoginData::getAccountIdByPlayerId(uint32_t playerId)
 	return result->getNumber<uint32_t>("account_id");
 }
 
+std::string IOLoginData::getPlayerInfo(const std::string& playerName)
+{
+	Database& db = Database::getInstance();
+
+	std::ostringstream query;
+	query << "SELECT `level`, `vocation` FROM `players` WHERE `name` = " << db.escapeString(playerName);
+	DBResult_ptr result = db.storeQuery(query.str());
+
+	if (!result) {
+		return "??";
+	}
+
+	const uint32_t level = result->getNumber<uint32_t>("level");
+	const uint32_t vocationId = result->getNumber<uint32_t>("vocation");
+
+	std::string vocation;
+	switch (vocationId) {
+		case 0: {
+			vocation = "R";
+			break;
+		}
+		case 1: {
+			vocation = "S";
+			break;
+		}
+		case 2: {
+			vocation = "D";
+			break;
+		}
+		case 3: {
+			vocation = "P";
+			break;
+		}
+		case 4: {
+			vocation = "K";
+			break;
+		}
+		case 5: {
+			vocation = "MS";
+			break;
+		}
+		case 6: {
+			vocation = "ED";
+			break;
+		}
+		case 7: {
+			vocation = "RP";
+			break;
+		}
+		case 8: {
+			vocation = "EK";
+			break;
+		}
+		default: {
+			vocation = "??";
+			break;
+		}
+	}
+
+	std::stringstream ret;
+	ret << "Level: " << level << " Vocation: " << vocation;
+
+	return ret.str();
+}
+
 AccountType_t IOLoginData::getAccountType(uint32_t accountId)
 {
 	std::ostringstream query;
